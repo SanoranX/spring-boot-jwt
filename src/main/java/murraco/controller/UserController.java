@@ -2,7 +2,9 @@ package murraco.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import murraco.model.AppUser;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,13 +28,14 @@ import murraco.dto.UserResponseDTO;
 import murraco.service.UserService;
 
 @RestController
-@RequestMapping("/users")
 @Api(tags = "users")
 @RequiredArgsConstructor
+@RequestMapping("/users")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
 
-  private final UserService userService;
-  private final ModelMapper modelMapper;
+  UserService userService;
+  ModelMapper modelMapper;
 
   @PostMapping("/signin")
   @ApiOperation(value = "${UserController.signin}")
@@ -42,7 +45,7 @@ public class UserController {
   public String login(//
       @ApiParam("Username") @RequestParam String username, //
       @ApiParam("Password") @RequestParam String password) {
-    return userService.signin(username, password);
+    return userService.signIn(username, password);
   }
 
   @PostMapping("/signup")
@@ -52,7 +55,7 @@ public class UserController {
       @ApiResponse(code = 403, message = "Access denied"), //
       @ApiResponse(code = 422, message = "Username is already in use")})
   public String signup(@ApiParam("Signup User") @RequestBody UserDataDTO user) {
-    return userService.signup(modelMapper.map(user, AppUser.class));
+    return userService.signUp(modelMapper.map(user, AppUser.class));
   }
 
   @DeleteMapping(value = "/{username}")
@@ -88,7 +91,7 @@ public class UserController {
       @ApiResponse(code = 403, message = "Access denied"), //
       @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
   public UserResponseDTO whoami(HttpServletRequest req) {
-    return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
+    return modelMapper.map(userService.whoAmI(req), UserResponseDTO.class);
   }
 
   @GetMapping("/refresh")

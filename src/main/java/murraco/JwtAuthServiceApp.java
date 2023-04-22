@@ -3,7 +3,9 @@ package murraco;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import murraco.model.AppUser;
 import murraco.model.AppUserRole;
 import org.modelmapper.ModelMapper;
@@ -16,9 +18,10 @@ import murraco.service.UserService;
 
 @SpringBootApplication
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthServiceApp implements CommandLineRunner {
 
-  final UserService userService;
+  UserService userService;
 
   public static void main(String[] args) {
     SpringApplication.run(JwtAuthServiceApp.class, args);
@@ -35,17 +38,17 @@ public class JwtAuthServiceApp implements CommandLineRunner {
     admin.setUsername("admin");
     admin.setPassword("admin");
     admin.setEmail("admin@email.com");
-    admin.setAppUserRoles(new ArrayList<AppUserRole>(Arrays.asList(AppUserRole.ROLE_ADMIN)));
+    admin.setAppUserRoles(new ArrayList<>(Arrays.asList(AppUserRole.ROLE_ADMIN)));
 
-    userService.signup(admin);
+    userService.signUp(admin);
 
     AppUser client = new AppUser();
     client.setUsername("client");
     client.setPassword("client");
     client.setEmail("client@email.com");
-    client.setAppUserRoles(new ArrayList<AppUserRole>(Arrays.asList(AppUserRole.ROLE_CLIENT)));
+    client.setAppUserRoles(new ArrayList<>(Arrays.asList(AppUserRole.ROLE_CLIENT)));
 
-    userService.signup(client);
+    userService.signUp(client);
   }
 
 }

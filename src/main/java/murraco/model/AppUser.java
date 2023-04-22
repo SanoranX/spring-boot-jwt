@@ -1,7 +1,7 @@
 package murraco.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
@@ -15,23 +15,25 @@ import javax.persistence.Id;
 import javax.validation.constraints.Size;
 
 @Entity
-@Data // Create getters and setters
+@Getter
+@Setter
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppUser {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  Integer id;
 
+  @Column(unique = true, nullable = false)
   @Size(min = 4, max = 255, message = "Minimum username length: 4 characters")
-  @Column(unique = true, nullable = false)
-  private String username;
+  String username;
 
   @Column(unique = true, nullable = false)
-  private String email;
+  String email;
 
   @Size(min = 8, message = "Minimum password length: 8 characters")
-  private String password;
+  String password;
 
   @ElementCollection(fetch = FetchType.EAGER)
   List<AppUserRole> appUserRoles;

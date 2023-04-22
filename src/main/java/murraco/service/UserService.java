@@ -2,7 +2,9 @@ package murraco.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,14 +19,15 @@ import murraco.security.JwtTokenProvider;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
 
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
-  private final JwtTokenProvider jwtTokenProvider;
-  private final AuthenticationManager authenticationManager;
+  UserRepository userRepository;
+  PasswordEncoder passwordEncoder;
+  JwtTokenProvider jwtTokenProvider;
+  AuthenticationManager authenticationManager;
 
-  public String signin(String username, String password) {
+  public String signIn(String username, String password) {
     try {
       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
       return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getAppUserRoles());
@@ -33,7 +36,7 @@ public class UserService {
     }
   }
 
-  public String signup(AppUser appUser) {
+  public String signUp(AppUser appUser) {
     if (!userRepository.existsByUsername(appUser.getUsername())) {
       appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
       userRepository.save(appUser);
@@ -55,7 +58,7 @@ public class UserService {
     return appUser;
   }
 
-  public AppUser whoami(HttpServletRequest req) {
+  public AppUser whoAmI(HttpServletRequest req) {
     return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
   }
 
